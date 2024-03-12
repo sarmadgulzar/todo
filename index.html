@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Todo List App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        .card {
+            margin-top: 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-checkbox .custom-control-label::before {
+            border-radius: 50%;
+        }
+
+        .custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0">Vue.js Todo List App</h1>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Enter a new todo" v-model="newTodo" @keyup.enter="addTodo">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" @click="addTodo">Add</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-outline-secondary mr-2" @click="setFilter('all')" :class="{ active: filter === 'all' }">All</button>
+                    <button class="btn btn-outline-secondary mr-2" @click="setFilter('completed')" :class="{ active: filter === 'completed' }">Completed</button>
+                    <button class="btn btn-outline-secondary" @click="setFilter('pending')" :class="{ active: filter === 'pending' }">Pending</button>
+                </div>
+                <ul class="list-group">
+                    <li v-for="(todo, index) in filteredTodos" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" :id="'todo-' + index" v-model="todo.completed">
+                            <label class="custom-control-label" :for="'todo-' + index" :class="{ 'text-muted': todo.completed }">{{ todo.text }}</label>
+                        </div>
+                        <button class="btn btn-danger btn-sm" @click="removeTodo(index)">Remove</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                newTodo: '',
+                todos: [],
+                filter: 'all'
+            },
+            computed: {
+                filteredTodos() {
+                    if (this.filter === 'completed') {
+                        return this.todos.filter(todo => todo.completed);
+                    } else if (this.filter === 'pending') {
+                        return this.todos.filter(todo => !todo.completed);
+                    } else {
+                        return this.todos;
+                    }
+                }
+            },
+            methods: {
+                addTodo() {
+                    if (this.newTodo.trim() !== '') {
+                        this.todos.push({
+                            text: this.newTodo,
+                            completed: false
+                        });
+                        this.newTodo = '';
+                    }
+                },
+                removeTodo(index) {
+                    this.todos.splice(index, 1);
+                },
+                toggleTodo(index) {
+                    this.todos[index].completed = !this.todos[index].completed;
+                },
+                setFilter(filter) {
+                    this.filter = filter;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
